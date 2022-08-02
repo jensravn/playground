@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+	println("Hello CHANNELS playground!")
 	ss1 := []string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
 	ss2, err := fast(ss1)
 	if err != nil {
