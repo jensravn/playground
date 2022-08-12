@@ -9,3 +9,5 @@ type UserRepo interface {
 	UpdateUser(user entity.User) error
 	DeleteUser(id int) error
 }
+
+var Test = "Test"

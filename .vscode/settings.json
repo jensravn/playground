@@ -1,3 +1,5 @@
 {
-  "cSpell.words": ["exrepo", "firestore", "goplayground", "jensravn", "mockdb"]
+  "go.lintFlags": ["--fast"],
+  "go.lintOnSave": "package",
+  "go.lintTool": "golangci-lint"
 }
