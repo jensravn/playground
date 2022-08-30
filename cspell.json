@@ -4,12 +4,17 @@
   "dictionaryDefinitions": [],
   "dictionaries": [],
   "words": [
+    "beamx",
+    "Distro",
     "exdi",
     "exrepo",
     "firestore",
     "goplayground",
     "jensravn",
-    "mockdb"
+    "kinglear",
+    "mockdb",
+    "textio",
+    "wordcount"
   ],
   "ignoreWords": [],
   "import": []
