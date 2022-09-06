@@ -6,6 +6,7 @@
   "words": [
     "beamx",
     "Distro",
+    "exdataflow",
     "exdi",
     "exrepo",
     "firestore",
@@ -13,8 +14,11 @@
     "jensravn",
     "kinglear",
     "mockdb",
+    "Parameterizable",
+    "pubsubio",
     "textio",
-    "wordcount"
+    "wordcount",
+    "wordcounts"
   ],
   "ignoreWords": [],
   "import": []
