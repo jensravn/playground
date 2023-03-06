@@ -1,4 +1,4 @@
-// From github/apache/beam/sdks/go/examples/wordcount/wordcount.go
+// From https://github.com/apache/beam/blob/master/sdks/go/examples/wordcount/wordcount.go
 package main
 
 import (
@@ -16,6 +16,7 @@ import (
 	"github.com/apache/beam/sdks/v2/go/pkg/beam/x/beamx"
 )
 
+// Using Parameterizable PipelineOptions
 var (
 	input  = flag.String("input", "gs://apache-beam-samples/shakespeare/kinglear.txt", "File(s) to read.")
 	output = flag.String("output", "", "Output file (required).")
@@ -55,6 +56,7 @@ func formatFn(w string, c int) string {
 	return fmt.Sprintf("%s: %v", w, c)
 }
 
+// Creating Composite Transforms
 func CountWords(s beam.Scope, lines beam.PCollection) beam.PCollection {
 	s = s.Scope("CountWords")
 	col := beam.ParDo(s, &extractFn{SmallWordLength: *smallWordLength}, lines)
@@ -72,6 +74,8 @@ func main() {
 
 	lines := textio.Read(s, *input)
 	counted := CountWords(s, lines)
+
+	// Applying ParDo with an explicit DoFn
 	formatted := beam.ParDo(s, formatFn, counted)
 	textio.Write(s, *output, formatted)
 	if err := beamx.Run(context.Background(), p); err != nil {
