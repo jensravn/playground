@@ -3,13 +3,13 @@ module github.com/jensravn/goplayground
 go 1.18
 
 require (
+	cloud.google.com/go/compute v1.7.0
 	cloud.google.com/go/firestore v1.6.1
 	github.com/apache/beam/sdks/v2 v2.41.0
 )
 
 require (
 	cloud.google.com/go v0.102.1 // indirect
-	cloud.google.com/go/compute v1.7.0 // indirect
 	cloud.google.com/go/iam v0.3.0 // indirect
 	cloud.google.com/go/storage v1.24.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
