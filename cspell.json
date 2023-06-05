@@ -16,8 +16,12 @@
     "kinglear",
     "mockdb",
     "Parameterizable",
+    "protobuf",
+    "pubsubbq",
     "pubsubio",
     "textio",
+    "timestamppb",
+    "tutorialpb",
     "wordcount",
     "wordcounts"
   ],
