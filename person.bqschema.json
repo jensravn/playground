@@ -1,0 +1,28 @@
+[
+  { "name": "attributes", "type": "JSON", "mode": "NULLABLE" },
+  { "name": "message_id", "type": "STRING", "mode": "NULLABLE" },
+  { "name": "publish_time", "type": "TIMESTAMP", "mode": "NULLABLE" },
+  { "name": "subscription_name", "type": "STRING", "mode": "NULLABLE" },
+
+  { "name": "name", "type": "STRING", "mode": "NULLABLE" },
+  { "name": "id", "type": "INTEGER", "mode": "NULLABLE" },
+  { "name": "email", "type": "STRING", "mode": "NULLABLE" },
+  {
+    "name": "phones",
+    "type": "RECORD",
+    "mode": "REPEATED",
+    "fields": [
+      { "name": "number", "type": "STRING", "mode": "NULLABLE" },
+      { "name": "type", "type": "INTEGER", "mode": "NULLABLE" }
+    ]
+  },
+  {
+    "name": "last_updated",
+    "type": "RECORD",
+    "mode": "NULLABLE",
+    "fields": [
+      { "name": "seconds", "type": "INTEGER", "mode": "NULLABLE" },
+      { "name": "nanos", "type": "INTEGER", "mode": "NULLABLE" }
+    ]
+  }
+]
