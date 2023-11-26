@@ -1,0 +1,7 @@
+{
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.defaultFormatter": "foxundermoon.shell-format",
+  "editor.formatOnSave": true
+}
