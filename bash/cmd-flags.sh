@@ -11,7 +11,7 @@ echo "Username: $username"
 echo "Age: $age"
 echo "Full Name: $fullname"
 
-# > ./cmd-flags.sh -u jens -a 30 -f "Jens Ravn"
-# Username: jens
+# > ./cmd-flags.sh -u user1 -a 30 -f "User One"
+# Username: user1
 # Age: 30
-# Full Name: Jens Ravn
+# Full Name: User One
