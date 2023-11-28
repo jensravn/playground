@@ -1,4 +1,4 @@
-# bash-playground
+# bash
 
 To execute script
 
