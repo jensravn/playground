@@ -1,0 +1,10 @@
+linters:
+  enable-all: true
+  disable:
+    # deprecated linters
+    - interfacer
+    - maligned
+    - scopelint
+    # annoying linters
+    - wsl # complains about formatting but does not have auto fix
+  fast: true

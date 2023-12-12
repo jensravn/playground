@@ -1,0 +1,30 @@
+{
+  "version": "0.2",
+  "ignorePaths": [],
+  "dictionaryDefinitions": [],
+  "dictionaries": [],
+  "words": [
+    "beamx",
+    "Distro",
+    "exdataflow",
+    "exdi",
+    "exrepo",
+    "firestore",
+    "genericslice",
+    "goplayground",
+    "jensravn",
+    "kinglear",
+    "mockdb",
+    "Parameterizable",
+    "protobuf",
+    "pubsubbq",
+    "pubsubio",
+    "textio",
+    "timestamppb",
+    "tutorialpb",
+    "wordcount",
+    "wordcounts"
+  ],
+  "ignoreWords": [],
+  "import": []
+}
