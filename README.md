@@ -1,1 +1,1 @@
-# rust-playground
+# playground
