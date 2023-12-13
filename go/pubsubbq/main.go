@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"cloud.google.com/go/pubsub"
-	"github.com/jensravn/goplayground/pubsubbq/pb"
+	"github.com/jensravn/playground/go/pubsubbq/pb"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

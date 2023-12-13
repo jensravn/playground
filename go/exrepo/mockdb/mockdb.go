@@ -3,7 +3,7 @@ package mockdb
 import (
 	"fmt"
 
-	"github.com/jensravn/goplayground/exrepo/entity"
+	"github.com/jensravn/playground/go/exrepo/entity"
 )
 
 type UserRepo struct {

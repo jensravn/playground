@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"cloud.google.com/go/firestore"
-	"github.com/jensravn/goplayground/exrepo/entity"
+	"github.com/jensravn/playground/go/exrepo/entity"
 )
 
 type UserRepo struct {
