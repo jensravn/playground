@@ -6,6 +6,7 @@ require (
 	cloud.google.com/go/compute/metadata v0.2.3
 	cloud.google.com/go/firestore v1.14.0
 	cloud.google.com/go/pubsub v1.33.0
+	github.com/a-h/templ v0.2.501
 	github.com/apache/beam/sdks/v2 v2.41.0
 	google.golang.org/grpc v1.59.0
 	google.golang.org/grpc/examples v0.0.0-20231213194625-43e4461a75a8
