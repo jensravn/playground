@@ -1,6 +1,6 @@
 package repo
 
-import "github.com/jensravn/playground/go/exrepo/entity"
+import "github.com/jensravn/playground/go/cmd/repository/entity"
 
 type UserRepo interface {
 	GetUser(id int) (*entity.User, error)

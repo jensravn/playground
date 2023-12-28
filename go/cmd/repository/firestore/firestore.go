@@ -5,16 +5,17 @@ import (
 	"log"
 
 	"cloud.google.com/go/firestore"
-	"github.com/jensravn/playground/go/exrepo/entity"
+	"github.com/jensravn/playground/go/cmd/repository/entity"
 )
 
-type UserRepo struct {
-}
+type UserRepo struct{}
 
 const usersCollection = "Users"
 
-var client *firestore.Client
-var ctx context.Context
+var (
+	client *firestore.Client
+	ctx    context.Context
+)
 
 func init() {
 	ctx = context.Background()

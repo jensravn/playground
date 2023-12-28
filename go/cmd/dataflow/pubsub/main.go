@@ -19,7 +19,7 @@ import (
 	beamLog "github.com/apache/beam/sdks/v2/go/pkg/beam/log"
 	"github.com/apache/beam/sdks/v2/go/pkg/beam/register"
 	"github.com/apache/beam/sdks/v2/go/pkg/beam/x/beamx"
-	"github.com/jensravn/playground/go/pb"
+	"github.com/jensravn/playground/go/internal/pb"
 	"google.golang.org/protobuf/proto"
 )
 

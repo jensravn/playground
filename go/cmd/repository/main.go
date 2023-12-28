@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"github.com/jensravn/playground/go/exrepo/entity"
-	"github.com/jensravn/playground/go/exrepo/firestore"
+	"github.com/jensravn/playground/go/cmd/repository/entity"
+	"github.com/jensravn/playground/go/cmd/repository/firestore"
 )
 
 func main() {
