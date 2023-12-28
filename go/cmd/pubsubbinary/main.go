@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/pubsub"
+	"github.com/jensravn/playground/go/internal/shared"
 )
 
 // send and receive binary messages with no schema
@@ -23,13 +24,13 @@ func main() {
 	topic := client.Topic("person_binary")
 	var network bytes.Buffer
 	enc := gob.NewEncoder(&network)
-	person := Person{
+	person := shared.Person{
 		ID:    1234,
 		Name:  "John Doe",
 		Email: "jdoe@example.com",
-		Phones: []*PhoneNumber{{
+		Phones: []*shared.PhoneNumber{{
 			Number: "555-4321",
-			Type:   PhoneTypeHOME,
+			Type:   shared.PhoneTypeHOME,
 		}},
 	}
 	err = enc.Encode(person)
@@ -49,7 +50,7 @@ func main() {
 	var received int32
 	err = sub.Receive(ctx, func(_ context.Context, msg *pubsub.Message) {
 		dec := gob.NewDecoder(bytes.NewBuffer(msg.Data))
-		var person Person
+		var person shared.Person
 		err = dec.Decode(&person)
 		if err != nil {
 			log.Fatal("decode error:", err)

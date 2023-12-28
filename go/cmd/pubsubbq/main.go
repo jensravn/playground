@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"cloud.google.com/go/pubsub"
-	"github.com/jensravn/playground/go/pb"
+	"github.com/jensravn/playground/go/internal/pb"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -28,7 +28,6 @@ func main() {
 		LastUpdated: timestamppb.Now(),
 	}
 	b, err := proto.Marshal(person)
-
 	// person := Person{
 	// 	Id:    1234,
 	// 	Name:  "John Doe",
@@ -39,7 +38,6 @@ func main() {
 	// 	}},
 	// }
 	// b, err := json.Marshal(&person)
-
 	if err != nil {
 		log.Fatalln("Failed to create person:", err)
 	}
