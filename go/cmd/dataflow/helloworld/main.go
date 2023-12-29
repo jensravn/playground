@@ -37,6 +37,7 @@ func myPipeline(scope beam.Scope, input_text string) beam.PCollection {
 }
 
 func main() {
+	// https://cloud.google.com/dataflow/docs/guides/setting-pipeline-options
 	flag.Parse()
 	beam.Init()
 

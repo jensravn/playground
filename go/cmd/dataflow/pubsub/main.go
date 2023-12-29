@@ -10,6 +10,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 
@@ -33,6 +34,7 @@ func init() {
 }
 
 func main() {
+	flag.Parse()
 	beam.Init()
 	ctx := context.Background()
 	pipeline, scope := beam.NewPipelineWithRoot()
