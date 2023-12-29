@@ -16,6 +16,9 @@ import (
 	"github.com/apache/beam/sdks/v2/go/pkg/beam/x/beamx"
 )
 
+// Wordcount example 2 of 5 - WordCount
+// beam.apache.org/get-started/wordcount-example/#wordcount-example
+
 // Using Parameterizable PipelineOptions
 var (
 	input  = flag.String("input", "gs://apache-beam-samples/shakespeare/kinglear.txt", "File(s) to read.")
