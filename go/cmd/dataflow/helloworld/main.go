@@ -1,11 +1,3 @@
-// Copyright 2022 Google LLC
-//
-// Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
-// https://www.apache.org/licenses/LICENSE-2.0> or the MIT license
-// <LICENSE-MIT or https://opensource.org/licenses/MIT>, at your
-// option. This file may not be copied, modified, or distributed
-// except according to those terms.
-
 package main
 
 import (
@@ -20,9 +12,10 @@ import (
 	"github.com/apache/beam/sdks/v2/go/pkg/beam/x/beamx"
 )
 
-var (
-	input_text = flag.String("input-text", "default input text", "Input text to print.")
-)
+// Hello world example.
+// https://github.com/apache/beam-starter-go
+
+var input_text = flag.String("input-text", "default input text", "Input text to print.")
 
 func init() {
 	// DoFns should be registered with Beam to be available in distributed runners.

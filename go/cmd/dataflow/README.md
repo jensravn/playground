@@ -1,9 +1,7 @@
-# Dataflow: Hello World!
-
-https://github.com/apache/beam-starter-go
+# Dataflow
 
 ```bash
-# Run locally using direct runner
+# Run on Prism (local portable runner)
 go run .
 
 # Run on Dataflow
