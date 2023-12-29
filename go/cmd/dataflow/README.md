@@ -4,15 +4,22 @@
 
 ```bash
 # Run on Prism (local portable runner)
-go run .
+go run . --project_id $PROJECT_ID
 
 # Run on Dataflow
 go run . \
+    --project_id $PROJECT_ID \
     --runner dataflow \
     --project $PROJECT_ID \
     --region $DATAFLOW_REGION \
     --staging_location gs://$STORAGE_BUCKET/binaries/
 ```
+
+## Links
+
+- [Apache Beam: Videos and Podcasts](https://beam.apache.org/get-started/resources/videos-and-podcasts/)
+- [Apache Beam: Programming Guide](https://beam.apache.org/documentation/programming-guide/)
+- [Skills Boost - Dataflow: Foundations](https://www.cloudskillsboost.google/course_templates/218)
 
 ## Troubleshooting
 
