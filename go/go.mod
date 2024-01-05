@@ -10,7 +10,7 @@ require (
 	github.com/a-h/templ v0.2.501
 	github.com/apache/beam/sdks/v2 v2.53.0
 	github.com/joho/godotenv v1.5.1
-	google.golang.org/grpc v1.59.0
+	google.golang.org/grpc v1.60.1
 	google.golang.org/grpc/examples v0.0.0-20231213194625-43e4461a75a8
 	google.golang.org/protobuf v1.31.0
 )
