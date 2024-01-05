@@ -1,0 +1,30 @@
+name: typescript
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "typescript/**"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "typescript/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          package_json_file: ./typescript/package.json
+
+      - name: Install dependencies
+        run: pnpm install
+        working-directory: ./typescript
+
+      - name: Build
+        run: pnpm build
+        working-directory: ./typescript
