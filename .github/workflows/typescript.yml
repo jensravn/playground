@@ -21,6 +21,10 @@ jobs:
         with:
           package_json_file: ./typescript/package.json
 
+      - name: Install dependencies
+        run: pnpm install
+        working-directory: ./typescript
+
       - name: Build
         run: pnpm build
         working-directory: ./typescript
