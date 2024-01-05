@@ -22,5 +22,5 @@ jobs:
           package_json_file: ./typescript/package.json
 
       - name: Build
-        run: pnpm run dev
+        run: pnpm build
         working-directory: ./typescript
