@@ -15,6 +15,7 @@ import (
 )
 
 func init() {
+	register.Function1x1(protoToString)
 	register.Function3x0(logAndEmit)
 	register.Emitter1[*pb.Person]()
 }
