@@ -7,6 +7,12 @@ import (
 
 func main() {
 	n := rand.Intn(195) + 1
-	fmt.Printf("https://www.examtopics.com/exams/google/professional-cloud-architect/view/%d\n", (n/5)+1)
+	page := getPage(n)
+	url := "https://www.examtopics.com/exams/google/professional-cloud-architect/view/%d\n"
+	fmt.Printf(url, page)
 	fmt.Printf("Question #%d\n", n)
+}
+
+func getPage(question int) int {
+	return (question-1)/5 + 1
 }
