@@ -46,8 +46,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/typescript-config
       '@types/eslint':
-        specifier: ^8.56.5
-        version: 8.56.5
+        specifier: ^8.56.6
+        version: 8.56.6
       '@types/node':
         specifier: ^20.11.28
         version: 20.11.28
@@ -102,8 +102,8 @@ importers:
         specifier: ^1.12.5
         version: 1.12.5(@types/node@20.11.28)(typescript@5.2.2)
       '@types/eslint':
-        specifier: ^8.56.5
-        version: 8.56.5
+        specifier: ^8.56.6
+        version: 8.56.6
       '@types/node':
         specifier: ^20.11.28
         version: 20.11.28
@@ -692,8 +692,8 @@ packages:
       update-check: 1.5.4
     dev: true
 
-  /@types/eslint@8.56.5:
-    resolution: {integrity: sha512-u5/YPJHo1tvkSF2CE0USEkxon82Z5DBy2xR+qfyYNszpX9qcs4sT6uq2kBbj4BXY1+DBGDPnrhMZV3pKWGNukw==}
+  /@types/eslint@8.56.6:
+    resolution: {integrity: sha512-ymwc+qb1XkjT/gfoQwxIeHZ6ixH23A+tCT2ADSA/DPVKzAjwYkTXBMCQ/f6fe4wEa85Lhp26VPeUxI7wMhAi7A==}
     dependencies:
       '@types/estree': 1.0.5
       '@types/json-schema': 7.0.12
