@@ -11,7 +11,7 @@ require (
 	github.com/apache/beam/sdks/v2 v2.55.0
 	github.com/joho/godotenv v1.5.1
 	github.com/mattn/go-sqlite3 v1.14.22
-	google.golang.org/api v0.171.0
+	google.golang.org/api v0.172.0
 	google.golang.org/grpc v1.62.1
 	google.golang.org/grpc/examples v0.0.0-20231213194625-43e4461a75a8
 	google.golang.org/protobuf v1.33.0
@@ -65,7 +65,7 @@ require (
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto v0.0.0-20240213162025-012b6fc9bca9 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240311132316-a219d84964c2 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240314234333-6e1732d8331c // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240318140521-94a12d6c2237 // indirect
 	gopkg.in/retry.v1 v1.0.3 // indirect
 	gotest.tools/v3 v3.5.1 // indirect
 )
