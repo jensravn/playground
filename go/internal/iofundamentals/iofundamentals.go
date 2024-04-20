@@ -30,3 +30,13 @@ func tryIoReadAll(in []byte) []byte {
 	}
 	return out
 }
+
+func tryIoLimitReader(in []byte) []byte {
+	r := bytes.NewReader(in)
+	lr := io.LimitReader(r, 5)
+	out, err := io.ReadAll(lr)
+	if err != nil {
+		panic(err)
+	}
+	return out
+}

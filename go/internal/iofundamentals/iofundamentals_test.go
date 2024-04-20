@@ -31,3 +31,12 @@ func Test_tryIoReadAll(t *testing.T) {
 }
 
 // https://medium.com/@andreiboar/fundamentals-of-i-o-in-go-part-2-e7bb68cd5608
+
+func Test_tryIoLimitReader(t *testing.T) {
+	in := []byte("Hello, World!")
+	out := tryIoLimitReader(in)
+	want := "Hello"
+	if string(out) != string(want) {
+		t.Errorf("tryIoReadAll() = %s, want %s", out, want)
+	}
+}
