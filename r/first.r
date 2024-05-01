@@ -15,3 +15,12 @@ with(PlantGrowth, weight)
 
 # pick file
 file.choose()
+
+# and
+is_false <- TRUE & FALSE
+
+# or
+is_true <- TRUE | FALSE
+
+# use ? to open help
+?read.table
