@@ -19,7 +19,7 @@
     "@types/eslint": "^8.56.7",
     "@types/react": "^18.2.74",
     "@types/react-dom": "^18.2.25",
-    "eslint": "^9.2.0",
+    "eslint": "^9.3.0",
     "react": "^18.2.0",
     "typescript": "^5.2.2"
   }
