@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/compute/metadata v0.3.0
 	cloud.google.com/go/datastore v1.17.0
 	cloud.google.com/go/firestore v1.15.0
-	cloud.google.com/go/pubsub v1.37.0
+	cloud.google.com/go/pubsub v1.38.0
 	github.com/a-h/templ v0.2.697
 	github.com/apache/beam/sdks/v2 v2.56.0
 	github.com/joho/godotenv v1.5.1
