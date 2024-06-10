@@ -1,6 +1,6 @@
 module github.com/jensravn/playground/go
 
-go 1.21
+go 1.22.4
 
 require (
 	cloud.google.com/go/compute/metadata v0.3.0
