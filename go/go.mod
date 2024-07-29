@@ -5,7 +5,7 @@ go 1.22.4
 require (
 	cloud.google.com/go/compute/metadata v0.5.0
 	cloud.google.com/go/datastore v1.17.1
-	cloud.google.com/go/firestore v1.15.0
+	cloud.google.com/go/firestore v1.16.0
 	cloud.google.com/go/pubsub v1.40.0
 	github.com/a-h/templ v0.2.747
 	github.com/apache/beam/sdks/v2 v2.57.0
@@ -41,7 +41,7 @@ require (
 	github.com/google/s2a-go v0.1.7 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.2 // indirect
-	github.com/googleapis/gax-go/v2 v2.12.5 // indirect
+	github.com/googleapis/gax-go/v2 v2.13.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0-rc5 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
@@ -63,7 +63,7 @@ require (
 	golang.org/x/time v0.5.0 // indirect
 	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d // indirect
 	google.golang.org/genproto v0.0.0-20240722135656-d784300faade // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20240701130421-f6361c86f094 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20240722135656-d784300faade // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240722135656-d784300faade // indirect
 	gopkg.in/retry.v1 v1.0.3 // indirect
 	gotest.tools/v3 v3.5.1 // indirect
