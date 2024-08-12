@@ -8,7 +8,7 @@ require (
 	cloud.google.com/go/firestore v1.16.0
 	cloud.google.com/go/pubsub v1.41.0
 	github.com/a-h/templ v0.2.747
-	github.com/apache/beam/sdks/v2 v2.57.0
+	github.com/apache/beam/sdks/v2 v2.58.0
 	github.com/joho/godotenv v1.5.1
 	github.com/mattn/go-sqlite3 v1.14.22
 	google.golang.org/api v0.189.0
@@ -24,8 +24,9 @@ require (
 	cloud.google.com/go/iam v1.1.10 // indirect
 	cloud.google.com/go/longrunning v0.5.9 // indirect
 	cloud.google.com/go/profiler v0.4.0 // indirect
-	cloud.google.com/go/storage v1.41.0 // indirect
+	cloud.google.com/go/storage v1.43.0 // indirect
 	github.com/Microsoft/go-winio v0.6.1 // indirect
+	github.com/avast/retry-go/v4 v4.6.0 // indirect
 	github.com/distribution/reference v0.5.0 // indirect
 	github.com/docker/docker v25.0.6+incompatible // indirect
 	github.com/docker/go-connections v0.5.0 // indirect
@@ -65,6 +66,5 @@ require (
 	google.golang.org/genproto v0.0.0-20240722135656-d784300faade // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240722135656-d784300faade // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240722135656-d784300faade // indirect
-	gopkg.in/retry.v1 v1.0.3 // indirect
 	gotest.tools/v3 v3.5.1 // indirect
 )
