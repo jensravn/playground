@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/compute/metadata v0.5.0
 	cloud.google.com/go/datastore v1.19.0
 	cloud.google.com/go/firestore v1.17.0
-	cloud.google.com/go/pubsub v1.42.0
+	cloud.google.com/go/pubsub v1.43.0
 	github.com/a-h/templ v0.2.778
 	github.com/apache/beam/sdks/v2 v2.59.0
 	github.com/joho/godotenv v1.5.1
@@ -56,7 +56,7 @@ require (
 	golang.org/x/crypto v0.26.0 // indirect
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d // indirect
 	golang.org/x/net v0.28.0 // indirect
-	golang.org/x/oauth2 v0.22.0 // indirect
+	golang.org/x/oauth2 v0.23.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.24.0 // indirect
 	golang.org/x/text v0.17.0 // indirect
