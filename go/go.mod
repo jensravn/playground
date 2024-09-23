@@ -3,7 +3,7 @@ module github.com/jensravn/playground/go
 go 1.22.4
 
 require (
-	cloud.google.com/go/compute/metadata v0.5.1
+	cloud.google.com/go/compute/metadata v0.5.2
 	cloud.google.com/go/datastore v1.19.0
 	cloud.google.com/go/firestore v1.17.0
 	cloud.google.com/go/pubsub v1.43.0
