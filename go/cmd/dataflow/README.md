@@ -8,7 +8,6 @@ go run . --project_id $PROJECT_ID
 
 # Run on Dataflow
 go run . \
-    --project_id $PROJECT_ID \
     --runner dataflow \
     --project $PROJECT_ID \
     --region $DATAFLOW_REGION \

@@ -4,6 +4,7 @@
   "dictionaryDefinitions": [],
   "dictionaries": [],
   "words": [
+    "apiv",
     "beamx",
     "Distro",
     "Errorln",
@@ -29,6 +30,7 @@
     "ptest",
     "pubsubbq",
     "pubsubio",
+    "pubsubpb",
     "textio",
     "timestamppb",
     "tutorialpb",

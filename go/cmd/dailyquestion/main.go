@@ -19,7 +19,6 @@ var exams = []struct {
 	{Exam: "professional-cloud-devops-engineer", Questions: 166, PageSize: 4},
 	{Exam: "professional-cloud-network-engineer", Questions: 172, PageSize: 4},
 	{Exam: "professional-cloud-security-engineer", Questions: 244},
-	{Exam: "professional-collaboration-engineer", Questions: 79},
 	{Exam: "professional-data-engineer", Questions: 311, PageSize: 10},
 	{Exam: "professional-google-workspace-administrator", Questions: 132, PageSize: 4},
 	{Exam: "professional-machine-learning-engineer", Questions: 285},
