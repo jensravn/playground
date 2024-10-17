@@ -9,17 +9,25 @@ import (
 )
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	psClient, err := pubsub.NewClient(r.Context(), "project-id")
+	ctx := r.Context()
+	psClient, err := pubsub.NewClient(ctx, "jensravn-playground")
 	if err != nil {
+		fmt.Printf("Failed to create client: %v", err)
 		http.Error(w, "Failed to create client: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 	defer psClient.Close()
 	topic := psClient.Topic("topic-id")
-	for i := 1; i <= 100; i++ {
-		_ = topic.Publish(r.Context(), &pubsub.Message{Data: []byte(fmt.Sprintf("Number %d", i))})
+	for i := 1; i <= 10; i++ {
+		res := topic.Publish(ctx, &pubsub.Message{Data: []byte(fmt.Sprintf("Number %d", i))})
+		id, err := res.Get(ctx)
+		if err != nil {
+			fmt.Printf("Failed to publish: %v", err)
+		} else {
+			fmt.Printf("Published message %d; msg ID: %v\n", i, id)
+		}
 	}
-	w.Write([]byte("100 messages published"))
+	w.Write([]byte("10 messages published"))
 }
 
 func main() {
@@ -28,5 +36,6 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
-	http.ListenAndServe(":"+port, nil)
+	err := http.ListenAndServe(":"+port, nil)
+	fmt.Printf("Failed to listen and serve: %v", err)
 }
