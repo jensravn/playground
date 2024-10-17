@@ -5,14 +5,19 @@ import (
 	"flag"
 	"time"
 
+	"cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"github.com/apache/beam/sdks/v2/go/pkg/beam"
 	"github.com/apache/beam/sdks/v2/go/pkg/beam/core/graph/window"
 	"github.com/apache/beam/sdks/v2/go/pkg/beam/io/pubsubio"
 	"github.com/apache/beam/sdks/v2/go/pkg/beam/log"
 	"github.com/apache/beam/sdks/v2/go/pkg/beam/x/beamx"
+	"github.com/jensravn/playground/go/internal/gob"
+	"github.com/jensravn/playground/go/internal/item"
 )
 
-func init() {}
+func init() {
+	// register.DoFn1x2[]()
+}
 
 func main() {
 	flag.Parse()
@@ -20,8 +25,15 @@ func main() {
 	ctx := context.Background()
 	p := beam.NewPipeline()
 	s := p.Root()
-	data := pubsubio.Read(s, "jensravn-playground", "topic-id", nil)
-	kvData := beam.ParDo(s, func(elm []byte) ([]byte, []byte) { return []byte("test"), elm }, data)
+	data := pubsubio.Read(s, "jensravn-playground", "topic-id", &pubsubio.ReadOptions{WithAttributes: true})
+	kvData := beam.ParDo(s, func(message *pubsubpb.PubsubMessage) (string, []byte) {
+		e, err := gob.Decode[item.Entity](message.Data)
+		if err != nil {
+			log.Fatalf(ctx, "Failed to decode entity: %v", err)
+		}
+		key := e.No + e.Type
+		return key, message.Data
+	}, data)
 	windowed := beam.WindowInto(s, window.NewFixedWindows(30*time.Second), kvData)
 	combined := beam.CombinePerKey(s, func(v, _ []byte) []byte { return v }, windowed)
 	deduplicated := beam.DropKey(s, combined)
