@@ -11,6 +11,8 @@ import (
 	"github.com/apache/beam/sdks/v2/go/pkg/beam/io/pubsubio"
 	"github.com/apache/beam/sdks/v2/go/pkg/beam/log"
 	"github.com/apache/beam/sdks/v2/go/pkg/beam/x/beamx"
+	"github.com/jensravn/playground/go/internal/gob"
+	"github.com/jensravn/playground/go/internal/item"
 )
 
 func init() {}
@@ -24,7 +26,12 @@ func main() {
 
 	messages := pubsubio.Read(s, "jensravn-playground", "topic-id", &pubsubio.ReadOptions{WithAttributes: true})
 	kvPairs := beam.ParDo(s, func(m *pubsubpb.PubsubMessage) (string, *pubsubpb.PubsubMessage) {
-		return "test", m
+		e, err := gob.Decode[item.Entity](m.Data)
+		if err != nil {
+			log.Fatalf(ctx, "Failed to decode message: %v", err)
+		}
+		key := e.No + e.Type
+		return key, m
 	}, messages)
 	windowed := beam.WindowInto(s, window.NewFixedWindows(30*time.Second), kvPairs)
 	combined := beam.CombinePerKey(s, func(m, _ *pubsubpb.PubsubMessage) *pubsubpb.PubsubMessage {
