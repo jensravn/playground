@@ -1,12 +1,14 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/jensravn/playground/go/internal/gob"
+	"github.com/jensravn/playground/go/internal/item"
 )
 
 type PushSubBody struct {
@@ -21,13 +23,12 @@ type Message struct {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	var pushSubReq PushSubBody
-	err := json.NewDecoder(r.Body).Decode(&pushSubReq)
+	e, err := gob.DecodeJSON[item.Entity](r.Body)
 	if err != nil {
-		log.Printf("Failed to decode body: %v", err)
-		http.Error(w, "Failed to decode body: "+err.Error(), http.StatusInternalServerError)
+		log.Printf("Failed to decode entity: %v", err)
+		http.Error(w, "Failed to decode entity: "+err.Error(), http.StatusInternalServerError)
 	}
-	log.Printf("data: %s, message: %#v", string(pushSubReq.Message.Data), pushSubReq)
+	log.Printf("message entity: %#v", e)
 	w.Write([]byte("received request\n"))
 }
 
@@ -37,6 +38,7 @@ func run() error {
 	if port == "" {
 		port = "8080"
 	}
+	log.Printf("Listening on port %s\n", port)
 	err := http.ListenAndServe(":"+port, nil)
 	return fmt.Errorf("Failed to listen and serve: %w", err)
 }
