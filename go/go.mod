@@ -11,14 +11,14 @@ require (
 	github.com/apache/beam/sdks/v2 v2.59.0
 	github.com/joho/godotenv v1.5.1
 	github.com/mattn/go-sqlite3 v1.14.24
-	google.golang.org/api v0.200.0
+	google.golang.org/api v0.201.0
 	google.golang.org/grpc v1.67.1
 	google.golang.org/grpc/examples v0.0.0-20231213194625-43e4461a75a8
 	google.golang.org/protobuf v1.35.1
 )
 
 require (
-	cloud.google.com/go v0.115.1 // indirect
+	cloud.google.com/go v0.116.0 // indirect
 	cloud.google.com/go/auth v0.9.8 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.4 // indirect
 	cloud.google.com/go/iam v1.2.1 // indirect
