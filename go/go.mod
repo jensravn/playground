@@ -8,7 +8,7 @@ require (
 	cloud.google.com/go/firestore v1.17.0
 	cloud.google.com/go/pubsub v1.44.0
 	github.com/a-h/templ v0.2.778
-	github.com/apache/beam/sdks/v2 v2.59.0
+	github.com/apache/beam/sdks/v2 v2.60.0
 	github.com/joho/godotenv v1.5.1
 	github.com/mattn/go-sqlite3 v1.14.24
 	google.golang.org/api v0.201.0
@@ -28,7 +28,7 @@ require (
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/avast/retry-go/v4 v4.6.0 // indirect
 	github.com/distribution/reference v0.6.0 // indirect
-	github.com/docker/docker v27.1.2+incompatible // indirect
+	github.com/docker/docker v27.3.1+incompatible // indirect
 	github.com/docker/go-connections v0.5.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
