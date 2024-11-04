@@ -4,7 +4,7 @@ go 1.23.2
 
 require (
 	cloud.google.com/go/compute/metadata v0.5.2
-	cloud.google.com/go/datastore v1.19.0
+	cloud.google.com/go/datastore v1.20.0
 	cloud.google.com/go/firestore v1.17.0
 	cloud.google.com/go/pubsub v1.44.0
 	github.com/a-h/templ v0.2.778
