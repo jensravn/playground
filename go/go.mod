@@ -8,7 +8,7 @@ require (
 	cloud.google.com/go/firestore v1.18.0
 	cloud.google.com/go/pubsub v1.45.3
 	github.com/a-h/templ v0.3.819
-	github.com/apache/beam/sdks/v2 v2.61.0
+	github.com/apache/beam/sdks/v2 v2.62.0
 	github.com/joho/godotenv v1.5.1
 	github.com/mattn/go-sqlite3 v1.14.24
 	google.golang.org/api v0.217.0
@@ -25,8 +25,8 @@ require (
 	cloud.google.com/go/iam v1.2.2 // indirect
 	cloud.google.com/go/longrunning v0.6.2 // indirect
 	cloud.google.com/go/monitoring v1.21.2 // indirect
-	cloud.google.com/go/profiler v0.4.1 // indirect
-	cloud.google.com/go/storage v1.45.0 // indirect
+	cloud.google.com/go/profiler v0.4.2 // indirect
+	cloud.google.com/go/storage v1.48.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.24.2 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.48.1 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.48.1 // indirect
@@ -46,7 +46,7 @@ require (
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/google/pprof v0.0.0-20240528025155-186aa0362fba // indirect
+	github.com/google/pprof v0.0.0-20240727154555-813a5fbdbec8 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.4 // indirect
