@@ -7,7 +7,7 @@ require (
 	cloud.google.com/go/datastore v1.20.0
 	cloud.google.com/go/firestore v1.18.0
 	cloud.google.com/go/pubsub v1.45.3
-	github.com/a-h/templ v0.3.819
+	github.com/a-h/templ v0.3.833
 	github.com/apache/beam/sdks/v2 v2.62.0
 	github.com/joho/godotenv v1.5.1
 	github.com/mattn/go-sqlite3 v1.14.24
