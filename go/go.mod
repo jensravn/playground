@@ -12,7 +12,7 @@ require (
 	github.com/a-h/templ v0.3.857
 	github.com/apache/beam/sdks/v2 v2.64.0
 	github.com/joho/godotenv v1.5.1
-	github.com/mattn/go-sqlite3 v1.14.24
+	github.com/mattn/go-sqlite3 v1.14.27
 	google.golang.org/api v0.228.0
 	google.golang.org/grpc v1.71.1
 	google.golang.org/grpc/examples v0.0.0-20231213194625-43e4461a75a8
