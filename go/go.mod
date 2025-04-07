@@ -1,6 +1,7 @@
 module github.com/jensravn/playground/go
 
 go 1.23.2
+
 toolchain go1.24.1
 
 require (
@@ -13,7 +14,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/mattn/go-sqlite3 v1.14.24
 	google.golang.org/api v0.228.0
-	google.golang.org/grpc v1.71.0
+	google.golang.org/grpc v1.71.1
 	google.golang.org/grpc/examples v0.0.0-20231213194625-43e4461a75a8
 	google.golang.org/protobuf v1.36.6
 )
