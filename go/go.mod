@@ -5,7 +5,7 @@ go 1.23.2
 toolchain go1.24.1
 
 require (
-	cloud.google.com/go/compute/metadata v0.7.0
+	cloud.google.com/go/compute/metadata v0.8.0
 	cloud.google.com/go/datastore v1.20.0
 	cloud.google.com/go/firestore v1.18.0
 	cloud.google.com/go/pubsub v1.50.0
