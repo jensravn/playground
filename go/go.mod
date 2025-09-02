@@ -14,7 +14,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/mattn/go-sqlite3 v1.14.32
 	google.golang.org/api v0.248.0
-	google.golang.org/genai v1.19.0
+	google.golang.org/genai v1.22.0
 	google.golang.org/grpc v1.75.0
 	google.golang.org/grpc/examples v0.0.0-20231213194625-43e4461a75a8
 	google.golang.org/protobuf v1.36.8
