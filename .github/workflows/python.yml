@@ -1,0 +1,31 @@
+name: python
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "python/**"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "python/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install Ruff
+        run: pip install ruff
+
+      - name: Code is formatted correctly
+        run: ruff format --check
+
+      - name: Linting
+        run: ruff check .
