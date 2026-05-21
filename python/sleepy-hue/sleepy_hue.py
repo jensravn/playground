@@ -137,6 +137,13 @@ def activate_resolved_scene(bridge_ip, username, resolved):
         activate_smart_scene(bridge_ip, username, resolved[1])
 
 
+def blink_group(bridge_ip, username, group_id, times=3):
+    url = f"https://{bridge_ip}/api/{username}/groups/{group_id}/action"
+    for _ in range(times):
+        requests.put(url, json={"alert": "select"}, timeout=10, verify=False)
+        time.sleep(1.2)
+
+
 def countdown(seconds):
     try:
         for remaining in range(seconds, 0, -1):
@@ -178,12 +185,17 @@ def main():
     print(f"\nActivating scene '{SCENE_NAME}' for 25 minutes...")
     activate_resolved_scene(bridge_ip, username, start)
 
+    group_id = start[2] if start[0] == "v1" else (end[2] if end[0] == "v1" else None)
+
     try:
         countdown(DURATION_SECONDS)
     except KeyboardInterrupt:
         pass
     finally:
-        print(f"\nActivating scene '{END_SCENE_NAME}'...")
+        if group_id:
+            print("\nBlinking...")
+            blink_group(bridge_ip, username, group_id)
+        print(f"Activating scene '{END_SCENE_NAME}'...")
         activate_resolved_scene(bridge_ip, username, end)
 
 
