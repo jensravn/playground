@@ -23,8 +23,18 @@ SCENE_NAME = "work"
 END_SCENE_NAME = "Natural light"
 
 DANISH_MONTHS = [
-    "jan", "feb", "mar", "apr", "maj", "jun",
-    "jul", "aug", "sep", "okt", "nov", "dec",
+    "jan",
+    "feb",
+    "mar",
+    "apr",
+    "maj",
+    "jun",
+    "jul",
+    "aug",
+    "sep",
+    "okt",
+    "nov",
+    "dec",
 ]
 
 
@@ -42,7 +52,9 @@ def save_config(config):
 
 def ensure_logseq_vault(config):
     if "logseq_vault" not in config:
-        print("\nLogseq integration: angiv stien til din vault (tryk Enter for at springe over):")
+        print(
+            "\nLogseq integration: angiv stien til din vault (tryk Enter for at springe over):"
+        )
         path = input("Logseq vault-sti: ").strip()
         if path:
             config["logseq_vault"] = path
@@ -131,25 +143,22 @@ def resolve_scene(scenes, smart_scenes, name):
 
 def activate_scene(bridge_ip, username, scene_id, group_id):
     url = f"https://{bridge_ip}/api/{username}/groups/{group_id}/action"
-    resp = requests.put(url, json={"scene": scene_id}, timeout=10, verify=False)
-    print(f"  [v1] status={resp.status_code} body={resp.text[:200]}")
+    requests.put(url, json={"scene": scene_id}, timeout=10, verify=False)
 
 
 def activate_smart_scene(bridge_ip, username, smart_scene_id):
     url = f"https://{bridge_ip}/clip/v2/resource/smart_scene/{smart_scene_id}"
     headers = {"hue-application-key": username}
-    resp = requests.put(
+    requests.put(
         url,
         headers=headers,
         json={"recall": {"action": "activate"}},
         timeout=10,
         verify=False,
     )
-    print(f"  [v2] status={resp.status_code} body={resp.text[:200]}")
 
 
 def activate_resolved_scene(bridge_ip, username, resolved):
-    print(f"  type={resolved[0]} id={resolved[1]}")
     if resolved[0] == "v1":
         activate_scene(bridge_ip, username, resolved[1], resolved[2])
     else:
@@ -230,8 +239,6 @@ def append_to_logseq(config, start_time, end_time, completed):
     with open(pomodoro_path, "w") as f:
         f.writelines(lines)
 
-    print(f"  Logseq: opdateret {pomodoro_path}")
-
 
 def log_session(config, start_time, end_time, completed):
     sessions = []
@@ -240,12 +247,14 @@ def log_session(config, start_time, end_time, completed):
             sessions = json.load(f)
 
     duration = int((end_time - start_time).total_seconds() / 60)
-    sessions.append({
-        "start": start_time.isoformat(timespec="seconds"),
-        "end": end_time.isoformat(timespec="seconds"),
-        "duration_minutes": duration,
-        "completed": completed,
-    })
+    sessions.append(
+        {
+            "start": start_time.isoformat(timespec="seconds"),
+            "end": end_time.isoformat(timespec="seconds"),
+            "duration_minutes": duration,
+            "completed": completed,
+        }
+    )
 
     with open(SESSION_LOG_PATH, "w") as f:
         json.dump(sessions, f, indent=2)
@@ -305,24 +314,40 @@ def show_stats():
     last_week = sum(v for d, v in by_date.items() if monday_last <= d < monday_this)
 
     mth = DANISH_MONTHS[monday_this.month - 1]
-    week_label = f"{monday_this.day}. {mth}–{today.day}. {DANISH_MONTHS[today.month - 1]}"
+    week_label = (
+        f"{monday_this.day}. {mth}–{today.day}. {DANISH_MONTHS[today.month - 1]}"
+    )
     print(f"\nDenne uge ({week_label}):  {this_week} sessioner")
     print(f"Forrige uge:                    {last_week} sessioner")
 
     # Måneds-statistik
-    this_month = sum(v for d, v in by_date.items() if d.year == today.year and d.month == today.month)
-    last_month_date = (today.replace(day=1) - datetime.timedelta(days=1))
-    last_month = sum(v for d, v in by_date.items() if d.year == last_month_date.year and d.month == last_month_date.month)
+    this_month = sum(
+        v for d, v in by_date.items() if d.year == today.year and d.month == today.month
+    )
+    last_month_date = today.replace(day=1) - datetime.timedelta(days=1)
+    last_month = sum(
+        v
+        for d, v in by_date.items()
+        if d.year == last_month_date.year and d.month == last_month_date.month
+    )
 
-    print(f"\nDenne måned ({DANISH_MONTHS[today.month - 1]}):              {this_month} sessioner")
-    print(f"Forrige måned ({DANISH_MONTHS[last_month_date.month - 1]}):            {last_month} sessioner")
+    print(
+        f"\nDenne måned ({DANISH_MONTHS[today.month - 1]}):              {this_month} sessioner"
+    )
+    print(
+        f"Forrige måned ({DANISH_MONTHS[last_month_date.month - 1]}):            {last_month} sessioner"
+    )
 
     print(f"\nTotal:                          {sum(by_date.values())} sessioner\n")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Sleepy Hue – aktivér sovescene med timer")
-    parser.add_argument("--stats", action="store_true", help="Vis statistik over sessioner")
+    parser = argparse.ArgumentParser(
+        description="Sleepy Hue – aktivér sovescene med timer"
+    )
+    parser.add_argument(
+        "--stats", action="store_true", help="Vis statistik over sessioner"
+    )
     args = parser.parse_args()
 
     if args.stats:
@@ -353,8 +378,7 @@ def main():
         smart_scenes = get_smart_scenes(bridge_ip, username)
     except requests.exceptions.ConnectionError:
         sys.exit(
-            f"Cannot reach Hue Bridge at {bridge_ip}"
-            " — are you on the right network?"
+            f"Cannot reach Hue Bridge at {bridge_ip} — are you on the right network?"
         )
 
     start = resolve_scene(scenes, smart_scenes, SCENE_NAME)
@@ -371,6 +395,7 @@ def main():
     group_id = start[2] if start[0] == "v1" else (end[2] if end[0] == "v1" else None)
 
     if group_id:
+
         def milestone_fn():
             blink_group(bridge_ip, username, group_id, times=1)
     else:
