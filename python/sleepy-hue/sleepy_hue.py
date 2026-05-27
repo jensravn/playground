@@ -163,9 +163,13 @@ def blink_group(bridge_ip, username, group_id, times=3):
         time.sleep(1.2)
 
 
-def countdown(seconds):
+def countdown(seconds, milestone_callback=None):
     try:
         for remaining in range(seconds, 0, -1):
+            elapsed = seconds - remaining
+            if milestone_callback and elapsed == 120:
+                print("\n✓ 2 minutter — du mødte op. Det tæller!")
+                milestone_callback()
             mins, secs = divmod(remaining, 60)
             print(
                 f"\rBlue light active — {mins:02d}:{secs:02d} remaining...  ",
@@ -249,6 +253,21 @@ def log_session(config, start_time, end_time, completed):
     append_to_logseq(config, start_time, end_time, completed)
 
 
+def get_streak():
+    if not os.path.exists(SESSION_LOG_PATH):
+        return 0
+    with open(SESSION_LOG_PATH) as f:
+        sessions = json.load(f)
+    completed_days = {s["start"][:10] for s in sessions if s.get("completed")}
+    today = datetime.date.today()
+    streak = 0
+    d = today
+    while d.isoformat() in completed_days:
+        streak += 1
+        d -= datetime.timedelta(days=1)
+    return streak
+
+
 def show_stats():
     if not os.path.exists(SESSION_LOG_PATH):
         print("Ingen sessioner logget endnu.")
@@ -267,7 +286,10 @@ def show_stats():
         by_date[date] += 1
 
     today = datetime.date.today()
+    streak = get_streak()
     print("\n=== Sleepy Hue sessioner ===\n")
+    if streak > 0:
+        print(f"🔥 Streak: {streak} dage i træk\n")
     print(f"{'Dato':<15}{'Sessioner':>9}")
     print("-" * 24)
     for i in range(13, -1, -1):
@@ -307,6 +329,12 @@ def main():
         show_stats()
         return
 
+    streak = get_streak()
+    if streak > 0:
+        print(f"🔥 Streak: {streak} dage — selv 2 min tæller i dag")
+    else:
+        print("Klar til start — selv 2 min tæller!")
+
     config = load_config()
 
     if "bridge_ip" not in config or "username" not in config:
@@ -342,21 +370,32 @@ def main():
 
     group_id = start[2] if start[0] == "v1" else (end[2] if end[0] == "v1" else None)
 
+    if group_id:
+        def milestone_fn():
+            blink_group(bridge_ip, username, group_id, times=1)
+    else:
+        milestone_fn = None
+
     session_start = datetime.datetime.now()
-    completed = False
+    full_session = False
     try:
-        countdown(DURATION_SECONDS)
-        completed = True
+        countdown(DURATION_SECONDS, milestone_callback=milestone_fn)
+        full_session = True
     except KeyboardInterrupt:
         pass
     finally:
         session_end = datetime.datetime.now()
+        elapsed_seconds = (session_end - session_start).total_seconds()
+        completed = full_session or elapsed_seconds >= 120
         if group_id:
             print("\nBlinking...")
             blink_group(bridge_ip, username, group_id)
         print(f"Activating scene '{END_SCENE_NAME}'...")
         activate_resolved_scene(bridge_ip, username, end)
         log_session(config, session_start, session_end, completed)
+        if completed:
+            streak = get_streak()
+            print(f"\nDu mødte op. Streak: {streak} dage 🔥")
 
 
 if __name__ == "__main__":
