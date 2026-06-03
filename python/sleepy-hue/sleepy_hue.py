@@ -22,19 +22,9 @@ DURATION_SECONDS = 25 * 60
 SCENE_NAME = "work"
 END_SCENE_NAME = "Natural light"
 
-DANISH_MONTHS = [
-    "jan",
-    "feb",
-    "mar",
-    "apr",
-    "maj",
-    "jun",
-    "jul",
-    "aug",
-    "sep",
-    "okt",
-    "nov",
-    "dec",
+ENGLISH_MONTHS = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ]
 
 
@@ -53,9 +43,9 @@ def save_config(config):
 def ensure_logseq_vault(config):
     if "logseq_vault" not in config:
         print(
-            "\nLogseq integration: angiv stien til din vault (tryk Enter for at springe over):"
+            "\nLogseq integration: enter the path to your vault (press Enter to skip):"
         )
-        path = input("Logseq vault-sti: ").strip()
+        path = input("Logseq vault path: ").strip()
         if path:
             config["logseq_vault"] = path
             save_config(config)
@@ -177,7 +167,7 @@ def countdown(seconds, milestone_callback=None):
         for remaining in range(seconds, 0, -1):
             elapsed = seconds - remaining
             if milestone_callback and elapsed == 120:
-                print("\n✓ 2 minutter — du mødte op. Det tæller!")
+                print("\n✓ 2 minutes — you showed up. That counts!")
                 milestone_callback()
             mins, secs = divmod(remaining, 60)
             print(
@@ -189,6 +179,13 @@ def countdown(seconds, milestone_callback=None):
         print("\rBlue light active — 00:00 remaining...  ", flush=True)
     except KeyboardInterrupt:
         raise
+
+
+def fmt_duration(minutes):
+    if minutes >= 60:
+        h, m = divmod(minutes, 60)
+        return f"{h}h {m}min" if m else f"{h}h"
+    return f"{minutes}min"
 
 
 def append_to_logseq(config, start_time, end_time, completed):
@@ -209,16 +206,10 @@ def append_to_logseq(config, start_time, end_time, completed):
         with open(pomodoro_path) as f:
             lines = f.readlines()
 
-    def fmt_duration(minutes):
-        if minutes >= 60:
-            h, m = divmod(minutes, 60)
-            return f"{h}t {m}min" if m else f"{h}t"
-        return f"{minutes}min"
-
     updated = False
     for i, line in enumerate(lines):
         if date_ref in line:
-            m = re.search(r"(\d+)t(?:\s(\d+)min)?|(\d+)min", line)
+            m = re.search(r"(\d+)h(?:\s(\d+)min)?|(\d+)min", line)
             if m:
                 if m.group(3):
                     existing_min = int(m.group(3))
@@ -226,7 +217,7 @@ def append_to_logseq(config, start_time, end_time, completed):
                     existing_min = int(m.group(1)) * 60 + int(m.group(2) or 0)
                 total_min = existing_min + duration
                 lines[i] = re.sub(
-                    r"\d+t(?:\s\d+min)?|\d+min",
+                    r"\d+h(?:\s\d+min)?|\d+min",
                     fmt_duration(total_min),
                     line,
                 )
@@ -277,50 +268,71 @@ def get_streak():
     return streak
 
 
+def get_today_minutes():
+    if not os.path.exists(SESSION_LOG_PATH):
+        return 0
+    with open(SESSION_LOG_PATH) as f:
+        sessions = json.load(f)
+    today = datetime.date.today().isoformat()
+    return sum(s["duration_minutes"] for s in sessions if s["start"][:10] == today)
+
+
+def format_today_time(minutes):
+    if minutes <= 0:
+        return None
+    h, m = divmod(minutes, 60)
+    return f"{h}h {m}min" if h else f"{m}min"
+
+
 def show_stats():
     if not os.path.exists(SESSION_LOG_PATH):
-        print("Ingen sessioner logget endnu.")
+        print("No sessions logged yet.")
         return
 
     with open(SESSION_LOG_PATH) as f:
         sessions = json.load(f)
 
     if not sessions:
-        print("Ingen sessioner logget endnu.")
+        print("No sessions logged yet.")
         return
 
     by_date = defaultdict(int)
+    minutes_by_date = defaultdict(int)
     for s in sessions:
         date = datetime.date.fromisoformat(s["start"][:10])
         by_date[date] += 1
+        minutes_by_date[date] += s.get("duration_minutes", 0)
 
     today = datetime.date.today()
     streak = get_streak()
-    print("\n=== Sleepy Hue sessioner ===\n")
+    today_minutes = get_today_minutes()
+    print("\n=== Sleepy Hue sessions ===\n")
     if streak > 0:
-        print(f"🔥 Streak: {streak} dage i træk\n")
-    print(f"{'Dato':<15}{'Sessioner':>9}")
-    print("-" * 24)
+        time_str = format_today_time(today_minutes) or "0min"
+        print(f"🔥 Streak: {streak} days — today: {time_str}\n")
+
+    print(f"{'Date':<15}{'Sessions':>9}{'Time':>10}")
+    print("-" * 34)
     for i in range(13, -1, -1):
         d = today - datetime.timedelta(days=i)
         marker = " <" if d == today else ""
-        print(f"{d.isoformat():<15}{by_date[d]:>9}{marker}")
+        sessions_count = by_date[d]
+        time_col = fmt_duration(minutes_by_date[d]) if minutes_by_date[d] else ""
+        print(f"{d.isoformat():<15}{sessions_count:>9}{time_col:>10}{marker}")
 
-    # Uge-statistik (mandag som ugestart)
     monday_this = today - datetime.timedelta(days=today.weekday())
     monday_last = monday_this - datetime.timedelta(weeks=1)
 
     this_week = sum(v for d, v in by_date.items() if monday_this <= d <= today)
     last_week = sum(v for d, v in by_date.items() if monday_last <= d < monday_this)
 
-    mth = DANISH_MONTHS[monday_this.month - 1]
+    mth = ENGLISH_MONTHS[monday_this.month - 1]
     week_label = (
-        f"{monday_this.day}. {mth}–{today.day}. {DANISH_MONTHS[today.month - 1]}"
+        f"{monday_this.day} {mth}–{today.day} {ENGLISH_MONTHS[today.month - 1]}"
     )
-    print(f"\nDenne uge ({week_label}):  {this_week} sessioner")
-    print(f"Forrige uge:                    {last_week} sessioner")
+    print(f"\nThis week ({week_label}):  {this_week} sessions")
+    print(f"Last week:                    {last_week} sessions")
 
-    # Måneds-statistik
     this_month = sum(
         v for d, v in by_date.items() if d.year == today.year and d.month == today.month
     )
@@ -332,21 +344,21 @@ def show_stats():
     )
 
     print(
-        f"\nDenne måned ({DANISH_MONTHS[today.month - 1]}):              {this_month} sessioner"
+        f"\nThis month ({ENGLISH_MONTHS[today.month - 1]}):              {this_month} sessions"
     )
     print(
-        f"Forrige måned ({DANISH_MONTHS[last_month_date.month - 1]}):            {last_month} sessioner"
+        f"Last month ({ENGLISH_MONTHS[last_month_date.month - 1]}):            {last_month} sessions"
     )
 
-    print(f"\nTotal:                          {sum(by_date.values())} sessioner\n")
+    print(f"\nTotal:                          {sum(by_date.values())} sessions\n")
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Sleepy Hue – aktivér sovescene med timer"
+        description="Sleepy Hue — activate sleep scene with timer"
     )
     parser.add_argument(
-        "--stats", action="store_true", help="Vis statistik over sessioner"
+        "--stats", action="store_true", help="Show session statistics"
     )
     args = parser.parse_args()
 
@@ -355,10 +367,17 @@ def main():
         return
 
     streak = get_streak()
-    if streak > 0:
-        print(f"🔥 Streak: {streak} dage — selv 2 min tæller i dag")
+    today_minutes = get_today_minutes()
+    time_str = format_today_time(today_minutes)
+
+    if streak > 0 and time_str:
+        print(f"🔥 Streak: {streak} days — today: {time_str} — even 2 min counts!")
+    elif streak > 0:
+        print(f"🔥 Streak: {streak} days — even 2 min counts today")
+    elif time_str:
+        print(f"Today: {time_str} — even 2 min counts!")
     else:
-        print("Klar til start — selv 2 min tæller!")
+        print("Ready to start — even 2 min counts!")
 
     config = load_config()
 
@@ -420,7 +439,9 @@ def main():
         log_session(config, session_start, session_end, completed)
         if completed:
             streak = get_streak()
-            print(f"\nDu mødte op. Streak: {streak} dage 🔥")
+            today_minutes = get_today_minutes()
+            time_str = format_today_time(today_minutes) or "0min"
+            print(f"\nYou showed up. Streak: {streak} days 🔥 — Today: {time_str}")
 
 
 if __name__ == "__main__":
