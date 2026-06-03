@@ -4,7 +4,10 @@
     "editor.codeActionsOnSave": {
       "source.fixAll.ruff": "explicit",
       "source.organizeImports.ruff": "explicit"
-    }
+    },
+    "editor.rulers": [
+      88
+    ],
   },
   "editor.formatOnSave": true,
   "notebook.formatOnCellExecution": true,
