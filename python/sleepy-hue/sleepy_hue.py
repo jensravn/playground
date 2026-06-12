@@ -22,6 +22,8 @@ DURATION_SECONDS = 25 * 60
 SCENE_NAME = "work"
 END_SCENE_NAME = "Natural light"
 
+SPOTIFY_DEFAULT_URI = "spotify:playlist:37i9dQZF1DWZeKCadgRdKQ"  # Deep Focus
+
 ENGLISH_MONTHS = [
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
@@ -38,6 +40,38 @@ def load_config():
 def save_config(config):
     with open(CONFIG_PATH, "w") as f:
         json.dump(config, f, indent=2)
+
+
+def ensure_spotify_playlist(config):
+    if "spotify_playlist" not in config:
+        print(
+            f"\nSpotify integration: enter a playlist URI (Enter for Deep Focus, 'skip' to disable):"
+        )
+        uri = input(f"  [{SPOTIFY_DEFAULT_URI}]: ").strip()
+        if uri.lower() == "skip":
+            config["spotify_playlist"] = ""
+        else:
+            config["spotify_playlist"] = uri or SPOTIFY_DEFAULT_URI
+        save_config(config)
+    return config
+
+
+def spotify_play(uri):
+    if not uri:
+        return
+    script = f'tell application "Spotify" to play track "{uri}"'
+    try:
+        subprocess.run(["osascript", "-e", script], check=False, capture_output=True, timeout=5)
+    except Exception:
+        pass
+
+
+def spotify_pause():
+    script = 'tell application "Spotify" to pause'
+    try:
+        subprocess.run(["osascript", "-e", script], check=False, capture_output=True, timeout=5)
+    except Exception:
+        pass
 
 
 def ensure_logseq_vault(config):
@@ -391,6 +425,7 @@ def main():
         username = config["username"]
 
     config = ensure_logseq_vault(config)
+    config = ensure_spotify_playlist(config)
 
     try:
         scenes = get_scenes(bridge_ip, username)
@@ -410,6 +445,7 @@ def main():
 
     print(f"\nActivating scene '{SCENE_NAME}' for 25 minutes...")
     activate_resolved_scene(bridge_ip, username, start)
+    spotify_play(config.get("spotify_playlist"))
 
     group_id = start[2] if start[0] == "v1" else (end[2] if end[0] == "v1" else None)
 
@@ -434,6 +470,7 @@ def main():
         if group_id:
             print("\nBlinking...")
             blink_group(bridge_ip, username, group_id)
+        spotify_pause()
         print(f"Activating scene '{END_SCENE_NAME}'...")
         activate_resolved_scene(bridge_ip, username, end)
         log_session(config, session_start, session_end, completed)
