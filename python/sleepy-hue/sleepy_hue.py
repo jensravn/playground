@@ -18,7 +18,8 @@ requests.packages.urllib3.disable_warnings(
 CONFIG_PATH = os.path.expanduser("~/.sleepy_hue.json")
 SESSION_LOG_PATH = os.path.expanduser("~/.sleepy_hue_sessions.json")
 DISCOVERY_URL = "https://discovery.meethue.com/"
-DURATION_SECONDS = 25 * 60
+INTERVAL_SECONDS = 25 * 60
+DURATION_SECONDS = INTERVAL_SECONDS * 4  # 100 minutes total
 SCENE_NAME = "work"
 END_SCENE_NAME = "Natural light"
 
@@ -196,13 +197,16 @@ def blink_group(bridge_ip, username, group_id, times=3):
         time.sleep(1.2)
 
 
-def countdown(seconds, milestone_callback=None):
+def countdown(seconds, interval_seconds, blink_callback=None):
     try:
         for remaining in range(seconds, 0, -1):
             elapsed = seconds - remaining
-            if milestone_callback and elapsed == 120:
+            if elapsed == 120:
                 print("\n✓ 2 minutes — you showed up. That counts!")
-                milestone_callback()
+            if blink_callback and elapsed > 0 and elapsed % interval_seconds == 0:
+                count = elapsed // interval_seconds
+                print(f"\n{count * 25} min — interval {count}", flush=True)
+                blink_callback(count)
             mins, secs = divmod(remaining, 60)
             print(
                 f"\rBlue light active — {mins:02d}:{secs:02d} remaining...  ",
@@ -443,7 +447,7 @@ def main():
     if end is None:
         sys.exit(f"Scene '{END_SCENE_NAME}' not found in your Hue app.")
 
-    print(f"\nActivating scene '{SCENE_NAME}' for 25 minutes...")
+    print(f"\nActivating scene '{SCENE_NAME}' for 100 minutes (blink every 25 min)...")
     activate_resolved_scene(bridge_ip, username, start)
     spotify_play(config.get("spotify_playlist"))
 
@@ -451,15 +455,15 @@ def main():
 
     if group_id:
 
-        def milestone_fn():
-            blink_group(bridge_ip, username, group_id, times=1)
+        def interval_blink(count):
+            blink_group(bridge_ip, username, group_id, times=count)
     else:
-        milestone_fn = None
+        interval_blink = None
 
     session_start = datetime.datetime.now()
     full_session = False
     try:
-        countdown(DURATION_SECONDS, milestone_callback=milestone_fn)
+        countdown(DURATION_SECONDS, INTERVAL_SECONDS, blink_callback=interval_blink)
         full_session = True
     except KeyboardInterrupt:
         pass
@@ -468,8 +472,9 @@ def main():
         elapsed_seconds = (session_end - session_start).total_seconds()
         completed = full_session or elapsed_seconds >= 120
         if group_id:
+            end_blinks = 4 if full_session else 1
             print("\nBlinking...")
-            blink_group(bridge_ip, username, group_id)
+            blink_group(bridge_ip, username, group_id, times=end_blinks)
         spotify_pause()
         print(f"Activating scene '{END_SCENE_NAME}'...")
         activate_resolved_scene(bridge_ip, username, end)
