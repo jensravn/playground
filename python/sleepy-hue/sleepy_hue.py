@@ -207,14 +207,15 @@ def countdown(seconds, interval_seconds, blink_callback=None):
                 count = elapsed // interval_seconds
                 print(f"\n{count * 25} min — interval {count}", flush=True)
                 blink_callback(count)
-            mins, secs = divmod(remaining, 60)
+            mins, secs = divmod(elapsed, 60)
             print(
-                f"\rBlue light active — {mins:02d}:{secs:02d} remaining...  ",
+                f"\rBlue light active — {mins:02d}:{secs:02d} elapsed...  ",
                 end="",
                 flush=True,
             )
             time.sleep(1)
-        print("\rBlue light active — 00:00 remaining...  ", flush=True)
+        total_mins, total_secs = divmod(seconds, 60)
+        print(f"\rBlue light active — {total_mins:02d}:{total_secs:02d} elapsed...  ", flush=True)
     except KeyboardInterrupt:
         raise
 
