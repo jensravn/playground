@@ -11,8 +11,9 @@ pip install requests
 ## Usage
 
 ```bash
-python sleepy_hue.py          # Start a session
-python sleepy_hue.py --stats  # Show session statistics
+python sleepy_hue.py                # Start a session
+python sleepy_hue.py --until 15:30  # Start a session, stop automatically at 15:30
+python sleepy_hue.py --stats        # Show session statistics
 ```
 
 **First run** automatically discovers your Hue Bridge and asks you to press the button on it to create an API key. Configuration is saved to `~/.sleepy_hue.json`, so subsequent runs start immediately.

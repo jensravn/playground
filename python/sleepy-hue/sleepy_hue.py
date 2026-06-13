@@ -197,7 +197,8 @@ def blink_group(bridge_ip, username, group_id, times=3):
         time.sleep(1.2)
 
 
-def countdown(seconds, interval_seconds, blink_callback=None):
+def countdown(seconds, interval_seconds, blink_callback=None, stop_at=None):
+    stop_label = f" (stopping at {stop_at.strftime('%H:%M')})" if stop_at else ""
     try:
         for remaining in range(seconds, 0, -1):
             elapsed = seconds - remaining
@@ -209,13 +210,13 @@ def countdown(seconds, interval_seconds, blink_callback=None):
                 blink_callback(count)
             mins, secs = divmod(elapsed, 60)
             print(
-                f"\rBlue light active — {mins:02d}:{secs:02d} elapsed...  ",
+                f"\rBlue light active — {mins:02d}:{secs:02d} elapsed{stop_label}  ",
                 end="",
                 flush=True,
             )
             time.sleep(1)
         total_mins, total_secs = divmod(seconds, 60)
-        print(f"\rBlue light active — {total_mins:02d}:{total_secs:02d} elapsed...  ", flush=True)
+        print(f"\rBlue light active — {total_mins:02d}:{total_secs:02d} elapsed{stop_label}  ", flush=True)
     except KeyboardInterrupt:
         raise
 
@@ -399,6 +400,9 @@ def main():
     parser.add_argument(
         "--stats", action="store_true", help="Show session statistics"
     )
+    parser.add_argument(
+        "--until", metavar="HH:MM", help="Stop automatically at this time (e.g. 15:30)"
+    )
     args = parser.parse_args()
 
     if args.stats:
@@ -448,7 +452,27 @@ def main():
     if end is None:
         sys.exit(f"Scene '{END_SCENE_NAME}' not found in your Hue app.")
 
-    print(f"\nActivating scene '{SCENE_NAME}' for 100 minutes (blink every 25 min)...")
+    stop_at = None
+    duration = DURATION_SECONDS
+    if args.until:
+        try:
+            stop_time = datetime.datetime.strptime(args.until, "%H:%M").replace(
+                year=datetime.datetime.now().year,
+                month=datetime.datetime.now().month,
+                day=datetime.datetime.now().day,
+            )
+            secs_until = int((stop_time - datetime.datetime.now()).total_seconds())
+            if secs_until <= 0:
+                sys.exit(f"--until {args.until} is already in the past.")
+            duration = min(secs_until, DURATION_SECONDS)
+            stop_at = stop_time
+        except ValueError:
+            sys.exit("Invalid time format — use HH:MM, e.g. --until 15:30")
+
+    if stop_at:
+        print(f"\nActivating scene '{SCENE_NAME}' — stopping at {stop_at.strftime('%H:%M')} (blink every 25 min)...")
+    else:
+        print(f"\nActivating scene '{SCENE_NAME}' for 100 minutes (blink every 25 min)...")
     activate_resolved_scene(bridge_ip, username, start)
     spotify_play(config.get("spotify_playlist"))
 
@@ -464,7 +488,7 @@ def main():
     session_start = datetime.datetime.now()
     full_session = False
     try:
-        countdown(DURATION_SECONDS, INTERVAL_SECONDS, blink_callback=interval_blink)
+        countdown(duration, INTERVAL_SECONDS, blink_callback=interval_blink, stop_at=stop_at)
         full_session = True
     except KeyboardInterrupt:
         pass
