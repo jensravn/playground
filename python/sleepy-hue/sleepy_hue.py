@@ -156,14 +156,53 @@ def get_smart_scenes(bridge_ip, username):
     return resp.json().get("data", [])
 
 
+def get_groups(bridge_ip, username):
+    url = f"https://{bridge_ip}/api/{username}/groups"
+    resp = requests.get(url, timeout=10, verify=False)
+    return resp.json()
+
+
+def ensure_rooms(config, bridge_ip, username):
+    if "rooms" not in config:
+        groups = get_groups(bridge_ip, username)
+        room_list = sorted(
+            [(gid, g["name"]) for gid, g in groups.items() if g.get("type") in ("Room", "Zone")],
+            key=lambda x: x[1],
+        )
+        print("\nAvailable rooms:")
+        for _, name in room_list:
+            print(f"  - {name}")
+        print("Enter room names to use (comma-separated), or Enter to use all:")
+        choice = input(": ").strip()
+        config["rooms"] = [r.strip() for r in choice.split(",")] if choice else []
+        save_config(config)
+    return config
+
+
 def resolve_scene(scenes, smart_scenes, name):
     for scene_id, scene in scenes.items():
         if scene.get("name", "").lower() == name.lower():
             return ("v1", scene_id, scene.get("group", "0"))
     for s in smart_scenes:
         if s.get("metadata", {}).get("name", "").lower() == name.lower():
-            return ("v2", s["id"])
+            return ("v2", s["id"], None)
     return None
+
+
+def resolve_scenes(scenes, smart_scenes, name, groups=None, room_names=None):
+    if not room_names:
+        result = resolve_scene(scenes, smart_scenes, name)
+        return [result] if result else []
+    room_group_ids = {gid for gid, g in (groups or {}).items() if g.get("name") in room_names}
+    results = []
+    for scene_id, scene in scenes.items():
+        if scene.get("name", "").lower() == name.lower() and scene.get("group") in room_group_ids:
+            results.append(("v1", scene_id, scene["group"]))
+    if not results:
+        for s in smart_scenes:
+            if s.get("metadata", {}).get("name", "").lower() == name.lower():
+                results.append(("v2", s["id"], None))
+    return results
 
 
 def activate_scene(bridge_ip, username, scene_id, group_id):
@@ -435,6 +474,7 @@ def main():
 
     config = ensure_logseq_vault(config)
     config = ensure_spotify_playlist(config)
+    config = ensure_rooms(config, bridge_ip, username)
 
     try:
         scenes = get_scenes(bridge_ip, username)
@@ -444,12 +484,15 @@ def main():
             f"Cannot reach Hue Bridge at {bridge_ip} — are you on the right network?"
         )
 
-    start = resolve_scene(scenes, smart_scenes, SCENE_NAME)
-    if start is None:
+    room_names = config.get("rooms", [])
+    groups = get_groups(bridge_ip, username) if room_names else {}
+
+    starts = resolve_scenes(scenes, smart_scenes, SCENE_NAME, groups, room_names)
+    if not starts:
         sys.exit(f"Scene '{SCENE_NAME}' not found in your Hue app.")
 
-    end = resolve_scene(scenes, smart_scenes, END_SCENE_NAME)
-    if end is None:
+    ends = resolve_scenes(scenes, smart_scenes, END_SCENE_NAME, groups, room_names)
+    if not ends:
         sys.exit(f"Scene '{END_SCENE_NAME}' not found in your Hue app.")
 
     stop_at = None
@@ -473,15 +516,19 @@ def main():
         print(f"\nActivating scene '{SCENE_NAME}' — stopping at {stop_at.strftime('%H:%M')} (blink every 25 min)...")
     else:
         print(f"\nActivating scene '{SCENE_NAME}' for 100 minutes (blink every 25 min)...")
-    activate_resolved_scene(bridge_ip, username, start)
+    for scene in starts:
+        activate_resolved_scene(bridge_ip, username, scene)
     spotify_play(config.get("spotify_playlist"))
 
-    group_id = start[2] if start[0] == "v1" else (end[2] if end[0] == "v1" else None)
+    group_ids = [s[2] for s in starts if s[0] == "v1" and s[2]]
+    if not group_ids:
+        group_ids = [s[2] for s in ends if s[0] == "v1" and s[2]]
 
-    if group_id:
+    if group_ids:
 
         def interval_blink(count):
-            blink_group(bridge_ip, username, group_id, times=count)
+            for gid in group_ids:
+                blink_group(bridge_ip, username, gid, times=count)
     else:
         interval_blink = None
 
@@ -496,13 +543,15 @@ def main():
         session_end = datetime.datetime.now()
         elapsed_seconds = (session_end - session_start).total_seconds()
         completed = full_session or elapsed_seconds >= 120
-        if group_id:
+        if group_ids:
             end_blinks = 4 if full_session else 1
             print("\nBlinking...")
-            blink_group(bridge_ip, username, group_id, times=end_blinks)
+            for gid in group_ids:
+                blink_group(bridge_ip, username, gid, times=end_blinks)
         spotify_pause()
         print(f"Activating scene '{END_SCENE_NAME}'...")
-        activate_resolved_scene(bridge_ip, username, end)
+        for scene in ends:
+            activate_resolved_scene(bridge_ip, username, scene)
         log_session(config, session_start, session_end, completed)
         if completed:
             streak = get_streak()
