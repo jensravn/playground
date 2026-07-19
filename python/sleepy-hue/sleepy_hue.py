@@ -18,8 +18,7 @@ requests.packages.urllib3.disable_warnings(
 CONFIG_PATH = os.path.expanduser("~/.sleepy_hue.json")
 SESSION_LOG_PATH = os.path.expanduser("~/.sleepy_hue_sessions.json")
 DISCOVERY_URL = "https://discovery.meethue.com/"
-INTERVAL_SECONDS = 25 * 60
-DURATION_SECONDS = INTERVAL_SECONDS * 4  # 100 minutes total
+DURATION_SECONDS = 25 * 60
 SCENE_NAME = "work"
 END_SCENE_NAME = "Natural light"
 
@@ -236,17 +235,13 @@ def blink_group(bridge_ip, username, group_id, times=3):
         time.sleep(1.2)
 
 
-def countdown(seconds, interval_seconds, blink_callback=None, stop_at=None):
+def countdown(seconds, stop_at=None):
     stop_label = f" (stopping at {stop_at.strftime('%H:%M')})" if stop_at else ""
     try:
         for remaining in range(seconds, 0, -1):
             elapsed = seconds - remaining
             if elapsed == 120:
                 print("\n✓ 2 minutes — you showed up. That counts!")
-            if blink_callback and elapsed > 0 and elapsed % interval_seconds == 0:
-                count = elapsed // interval_seconds
-                print(f"\n{count * 25} min — interval {count}", flush=True)
-                blink_callback(count)
             mins, secs = divmod(elapsed, 60)
             print(
                 f"\rBlue light active — {mins:02d}:{secs:02d} elapsed{stop_label}  ",
@@ -513,9 +508,9 @@ def main():
             sys.exit("Invalid time format — use HH:MM, e.g. --until 15:30")
 
     if stop_at:
-        print(f"\nActivating scene '{SCENE_NAME}' — stopping at {stop_at.strftime('%H:%M')} (blink every 25 min)...")
+        print(f"\nActivating scene '{SCENE_NAME}' — stopping at {stop_at.strftime('%H:%M')}...")
     else:
-        print(f"\nActivating scene '{SCENE_NAME}' for 100 minutes (blink every 25 min)...")
+        print(f"\nActivating scene '{SCENE_NAME}' for 25 minutes...")
     for scene in starts:
         activate_resolved_scene(bridge_ip, username, scene)
     spotify_play(config.get("spotify_playlist"))
@@ -524,18 +519,10 @@ def main():
     if not group_ids:
         group_ids = [s[2] for s in ends if s[0] == "v1" and s[2]]
 
-    if group_ids:
-
-        def interval_blink(count):
-            for gid in group_ids:
-                blink_group(bridge_ip, username, gid, times=count)
-    else:
-        interval_blink = None
-
     session_start = datetime.datetime.now()
     full_session = False
     try:
-        countdown(duration, INTERVAL_SECONDS, blink_callback=interval_blink, stop_at=stop_at)
+        countdown(duration, stop_at=stop_at)
         full_session = True
     except KeyboardInterrupt:
         pass
@@ -544,7 +531,7 @@ def main():
         elapsed_seconds = (session_end - session_start).total_seconds()
         completed = full_session or elapsed_seconds >= 120
         if group_ids:
-            end_blinks = 4 if full_session else 1
+            end_blinks = 3 if full_session else 1
             print("\nBlinking...")
             for gid in group_ids:
                 blink_group(bridge_ip, username, gid, times=end_blinks)
