@@ -24,6 +24,9 @@ END_SCENE_NAME = "Natural light"
 
 SPOTIFY_DEFAULT_URI = "spotify:playlist:37i9dQZF1DWZeKCadgRdKQ"  # Deep Focus
 
+DND_ON_SHORTCUT = "DND On"
+DND_OFF_SHORTCUT = "DND Off"
+
 ENGLISH_MONTHS = [
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
@@ -70,6 +73,44 @@ def spotify_pause():
     script = 'tell application "Spotify" to pause'
     try:
         subprocess.run(["osascript", "-e", script], check=False, capture_output=True, timeout=5)
+    except Exception:
+        pass
+
+
+def shortcut_exists(name):
+    try:
+        result = subprocess.run(
+            ["shortcuts", "list"], capture_output=True, text=True, timeout=10
+        )
+        return name in result.stdout.splitlines()
+    except Exception:
+        return False
+
+
+def ensure_dnd(config):
+    if "dnd_enabled" not in config:
+        if shortcut_exists(DND_ON_SHORTCUT) and shortcut_exists(DND_OFF_SHORTCUT):
+            print("\nDo Not Disturb: found shortcuts, enabling during sessions.")
+            config["dnd_enabled"] = True
+        else:
+            print(
+                f"\nDo Not Disturb integration: create two macOS Shortcuts named "
+                f"'{DND_ON_SHORTCUT}' and '{DND_OFF_SHORTCUT}' (each with a 'Set Focus' action)."
+            )
+            choice = input("Enable Do Not Disturb during sessions? [y/N]: ").strip().lower()
+            config["dnd_enabled"] = choice == "y"
+        save_config(config)
+    return config
+
+
+def set_dnd(config, on):
+    if not config.get("dnd_enabled"):
+        return
+    name = DND_ON_SHORTCUT if on else DND_OFF_SHORTCUT
+    try:
+        subprocess.run(
+            ["shortcuts", "run", name], check=False, capture_output=True, timeout=10
+        )
     except Exception:
         pass
 
@@ -469,6 +510,7 @@ def main():
 
     config = ensure_logseq_vault(config)
     config = ensure_spotify_playlist(config)
+    config = ensure_dnd(config)
     config = ensure_rooms(config, bridge_ip, username)
 
     try:
@@ -514,6 +556,7 @@ def main():
     for scene in starts:
         activate_resolved_scene(bridge_ip, username, scene)
     spotify_play(config.get("spotify_playlist"))
+    set_dnd(config, on=True)
 
     group_ids = [s[2] for s in starts if s[0] == "v1" and s[2]]
     if not group_ids:
@@ -536,6 +579,7 @@ def main():
             for gid in group_ids:
                 blink_group(bridge_ip, username, gid, times=end_blinks)
         spotify_pause()
+        set_dnd(config, on=False)
         print(f"Activating scene '{END_SCENE_NAME}'...")
         for scene in ends:
             activate_resolved_scene(bridge_ip, username, scene)
