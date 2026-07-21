@@ -9,11 +9,13 @@ import sys
 import time
 from collections import defaultdict
 
-import requests
-
-requests.packages.urllib3.disable_warnings(
-    requests.packages.urllib3.exceptions.InsecureRequestWarning
-)
+try:
+    import requests
+    requests.packages.urllib3.disable_warnings(
+        requests.packages.urllib3.exceptions.InsecureRequestWarning
+    )
+except Exception:
+    requests = None
 
 CONFIG_PATH = os.path.expanduser("~/.sleepy_hue.json")
 SESSION_LOG_PATH = os.path.expanduser("~/.sleepy_hue_sessions.json")
@@ -478,6 +480,11 @@ def main():
     parser.add_argument(
         "--until", metavar="HH:MM", help="Stop automatically at this time (e.g. 15:30)"
     )
+    parser.add_argument(
+        "--local",
+        action="store_true",
+        help="Run timer locally without controlling Hue, Spotify, or Shortcuts",
+    )
     args = parser.parse_args()
 
     if args.stats:
@@ -498,39 +505,45 @@ def main():
         print("Ready to start — even 2 min counts!")
 
     config = load_config()
-
-    if "bridge_ip" not in config or "username" not in config:
-        bridge_ip = discover_bridge()
-        username = create_api_key(bridge_ip)
-        config = {"bridge_ip": bridge_ip, "username": username}
-        save_config(config)
-    else:
-        bridge_ip = config["bridge_ip"]
-        username = config["username"]
-
-    config = ensure_logseq_vault(config)
-    config = ensure_spotify_playlist(config)
     config = ensure_dnd(config)
-    config = ensure_rooms(config, bridge_ip, username)
+    if args.local:
+        # Local-only mode: skip Hue/Spotify/Shortcuts and only run the timer
+        starts = []
+        ends = []
+        group_ids = []
+    else:
+        if "bridge_ip" not in config or "username" not in config:
+            bridge_ip = discover_bridge()
+            username = create_api_key(bridge_ip)
+            config = {"bridge_ip": bridge_ip, "username": username}
+            save_config(config)
+        else:
+            bridge_ip = config["bridge_ip"]
+            username = config["username"]
 
-    try:
-        scenes = get_scenes(bridge_ip, username)
-        smart_scenes = get_smart_scenes(bridge_ip, username)
-    except requests.exceptions.ConnectionError:
-        sys.exit(
-            f"Cannot reach Hue Bridge at {bridge_ip} — are you on the right network?"
-        )
+        config = ensure_logseq_vault(config)
+        config = ensure_spotify_playlist(config)
+        config = ensure_dnd(config)
+        config = ensure_rooms(config, bridge_ip, username)
 
-    room_names = config.get("rooms", [])
-    groups = get_groups(bridge_ip, username) if room_names else {}
+        try:
+            scenes = get_scenes(bridge_ip, username)
+            smart_scenes = get_smart_scenes(bridge_ip, username)
+        except requests.exceptions.ConnectionError:
+            sys.exit(
+                f"Cannot reach Hue Bridge at {bridge_ip} — are you on the right network?"
+            )
 
-    starts = resolve_scenes(scenes, smart_scenes, SCENE_NAME, groups, room_names)
-    if not starts:
-        sys.exit(f"Scene '{SCENE_NAME}' not found in your Hue app.")
+        room_names = config.get("rooms", [])
+        groups = get_groups(bridge_ip, username) if room_names else {}
 
-    ends = resolve_scenes(scenes, smart_scenes, END_SCENE_NAME, groups, room_names)
-    if not ends:
-        sys.exit(f"Scene '{END_SCENE_NAME}' not found in your Hue app.")
+        starts = resolve_scenes(scenes, smart_scenes, SCENE_NAME, groups, room_names)
+        if not starts:
+            sys.exit(f"Scene '{SCENE_NAME}' not found in your Hue app.")
+
+        ends = resolve_scenes(scenes, smart_scenes, END_SCENE_NAME, groups, room_names)
+        if not ends:
+            sys.exit(f"Scene '{END_SCENE_NAME}' not found in your Hue app.")
 
     stop_at = None
     duration = DURATION_SECONDS
@@ -549,18 +562,29 @@ def main():
         except ValueError:
             sys.exit("Invalid time format — use HH:MM, e.g. --until 15:30")
 
-    if stop_at:
-        print(f"\nActivating scene '{SCENE_NAME}' — stopping at {stop_at.strftime('%H:%M')}...")
+    if args.local:
+        if stop_at:
+            print(f"\nStarting local focus timer — stopping at {stop_at.strftime('%H:%M')}...")
+        else:
+            print("\nStarting local focus timer for 25 minutes...")
     else:
-        print(f"\nActivating scene '{SCENE_NAME}' for 25 minutes...")
-    for scene in starts:
-        activate_resolved_scene(bridge_ip, username, scene)
-    spotify_play(config.get("spotify_playlist"))
-    set_dnd(config, on=True)
+        if stop_at:
+            print(f"\nActivating scene '{SCENE_NAME}' — stopping at {stop_at.strftime('%H:%M')}...")
+        else:
+            print(f"\nActivating scene '{SCENE_NAME}' for 25 minutes...")
+    if not args.local:
+        for scene in starts:
+            activate_resolved_scene(bridge_ip, username, scene)
+        spotify_play(config.get("spotify_playlist"))
 
-    group_ids = [s[2] for s in starts if s[0] == "v1" and s[2]]
-    if not group_ids:
-        group_ids = [s[2] for s in ends if s[0] == "v1" and s[2]]
+        group_ids = [s[2] for s in starts if s[0] == "v1" and s[2]]
+        if not group_ids:
+            group_ids = [s[2] for s in ends if s[0] == "v1" and s[2]]
+    else:
+        group_ids = []
+
+    # Enable Do Not Disturb if configured (applies to local mode too)
+    set_dnd(config, on=True)
 
     session_start = datetime.datetime.now()
     full_session = False
@@ -578,11 +602,26 @@ def main():
             print("\nBlinking...")
             for gid in group_ids:
                 blink_group(bridge_ip, username, gid, times=end_blinks)
-        spotify_pause()
+
+        # Disable Do Not Disturb (applies to local mode too)
         set_dnd(config, on=False)
-        print(f"Activating scene '{END_SCENE_NAME}'...")
-        for scene in ends:
-            activate_resolved_scene(bridge_ip, username, scene)
+
+        if not args.local:
+            spotify_pause()
+            print(f"Activating scene '{END_SCENE_NAME}'...")
+            for scene in ends:
+                activate_resolved_scene(bridge_ip, username, scene)
+        else:
+            # Local mode: give a local visual reminder and a terminal bell
+            try:
+                subprocess.run([
+                    "osascript",
+                    "-e",
+                    'display notification "Your focus session is over" with title "Focus"'
+                ], check=False, capture_output=True, timeout=5)
+            except Exception:
+                pass
+            print("\a")
         log_session(config, session_start, session_end, completed)
         if completed:
             streak = get_streak()
