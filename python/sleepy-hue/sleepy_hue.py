@@ -278,7 +278,8 @@ def blink_group(bridge_ip, username, group_id, times=3):
         time.sleep(1.2)
 
 
-def countdown(seconds, stop_at=None):
+def countdown(seconds, stop_at=None, label=None):
+    label = label or "Blue light active"
     stop_label = f" (stopping at {stop_at.strftime('%H:%M')})" if stop_at else ""
     try:
         for remaining in range(seconds, 0, -1):
@@ -287,13 +288,13 @@ def countdown(seconds, stop_at=None):
                 print("\n✓ 2 minutes — you showed up. That counts!")
             mins, secs = divmod(elapsed, 60)
             print(
-                f"\rBlue light active — {mins:02d}:{secs:02d} elapsed{stop_label}  ",
+                f"\r{label} — {mins:02d}:{secs:02d} elapsed{stop_label}  ",
                 end="",
                 flush=True,
             )
             time.sleep(1)
         total_mins, total_secs = divmod(seconds, 60)
-        print(f"\rBlue light active — {total_mins:02d}:{total_secs:02d} elapsed{stop_label}  ", flush=True)
+        print(f"\r{label} — {total_mins:02d}:{total_secs:02d} elapsed{stop_label}  ", flush=True)
     except KeyboardInterrupt:
         raise
 
@@ -589,7 +590,7 @@ def main():
     session_start = datetime.datetime.now()
     full_session = False
     try:
-        countdown(duration, stop_at=stop_at)
+        countdown(duration, stop_at=stop_at, label=("Focus timer" if args.local else None))
         full_session = True
     except KeyboardInterrupt:
         pass
