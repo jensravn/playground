@@ -278,6 +278,17 @@ def blink_group(bridge_ip, username, group_id, times=3):
         time.sleep(1.2)
 
 
+def notify(title, message):
+    try:
+        subprocess.run([
+            "osascript",
+            "-e",
+            f'display notification "{message}" with title "{title}"'
+        ], check=False, capture_output=True, timeout=5)
+    except Exception:
+        pass
+
+
 def countdown(seconds, stop_at=None, label=None):
     label = label or "Blue light active"
     stop_label = f" (stopping at {stop_at.strftime('%H:%M')})" if stop_at else ""
@@ -607,22 +618,13 @@ def main():
         # Disable Do Not Disturb (applies to local mode too)
         set_dnd(config, on=False)
 
+        notify("Focus", "Your focus session is over")
+        print("\a")
         if not args.local:
             spotify_pause()
             print(f"Activating scene '{END_SCENE_NAME}'...")
             for scene in ends:
                 activate_resolved_scene(bridge_ip, username, scene)
-        else:
-            # Local mode: give a local visual reminder and a terminal bell
-            try:
-                subprocess.run([
-                    "osascript",
-                    "-e",
-                    'display notification "Your focus session is over" with title "Focus"'
-                ], check=False, capture_output=True, timeout=5)
-            except Exception:
-                pass
-            print("\a")
         log_session(config, session_start, session_end, completed)
         if completed:
             streak = get_streak()

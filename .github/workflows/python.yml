@@ -21,11 +21,14 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Install Ruff
-        run: pip install ruff
+      - name: Install dependencies
+        run: pip install ruff pytest
 
       - name: Code is formatted correctly
         run: ruff format --check
 
       - name: Linting
         run: ruff check .
+
+      - name: Tests
+        run: pytest python/
